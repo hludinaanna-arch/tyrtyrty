@@ -1,0 +1,204 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>TrackMyUni - Event Calendar</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        :root { --primary-color: #5a5ce6; --primary-hover: #4a4cd6; --text-dark: #111; --text-gray: #6b7280; --bg-light: #f9fafb; }
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { font-family: 'Outfit', sans-serif; background-color: var(--bg-light); color: var(--text-dark); line-height: 1.6; }
+        a { text-decoration: none; color: inherit; }
+        .container { max-width: 1200px; margin: 0 auto; padding: 0 2rem; }
+        
+        /* Header Styles */
+        header { background-color: #fff; padding: 1.5rem 0; position: sticky; top: 0; z-index: 100; box-shadow: 0 2px 10px rgba(0,0,0,0.05); }
+        .header-content { display: flex; justify-content: space-between; align-items: center; }
+        .logo { display: flex; align-items: center; gap: 0.8rem; font-size: 1.5rem; font-weight: 700; color: var(--text-dark); }
+        .logo svg { height: 40px; width: auto; }
+        .logo .highlight-my { color: #5A5CE6; }
+        nav { display: flex; gap: 2rem; align-items: center; }
+        nav a { font-weight: 500; color: var(--text-dark); transition: color 0.3s ease; }
+        nav a:hover { color: var(--primary-color); }
+        #lang-toggle { background: none; border: none; cursor: pointer; font-size: 1.4rem; color: var(--text-dark); display: flex; align-items: center; transition: transform 0.3s; padding: 0.5rem; border-radius: 50%; }
+        #lang-toggle:hover { background-color: #f3f4f6; transform: rotate(15deg); }
+        .auth-buttons { display: flex; gap: 1rem; }
+        .btn { padding: 0.6rem 1.5rem; border-radius: 50px; font-weight: 600; cursor: pointer; transition: all 0.3s ease; border: 2px solid transparent; display: inline-block; }
+        .btn-login { background-color: transparent; border-color: var(--primary-color); color: var(--primary-color); }
+        .btn-login:hover { background-color: var(--primary-color); color: #fff; }
+        .btn-signup { background-color: var(--primary-color); color: #fff; }
+        .btn-signup:hover { background-color: var(--primary-hover); }
+
+        /* Page Specific Styles */
+        .page-header { 
+            background: linear-gradient(135deg, #eef2ff 0%, #e0e7ff 100%); 
+            padding: 5rem 0; 
+            text-align: center; 
+            border-bottom-left-radius: 3rem; 
+            border-bottom-right-radius: 3rem; 
+            margin-bottom: 4rem; 
+        }
+        .page-header h1 { font-size: 3.5rem; font-weight: 800; margin-bottom: 1rem; letter-spacing: -0.02em; }
+        .page-header p { font-size: 1.2rem; color: var(--text-gray); max-width: 600px; margin: 0 auto; }
+        
+        .timeline { max-width: 800px; margin: 0 auto 6rem; position: relative; padding-left: 2.5rem; border-left: 3px solid #e0e7ff; }
+        .event-item { margin-bottom: 3rem; position: relative; }
+        .event-item::before { 
+            content: ''; 
+            position: absolute; 
+            left: -2.85rem; 
+            top: 0.5rem; 
+            width: 16px; 
+            height: 16px; 
+            background: var(--primary-color); 
+            border-radius: 50%; 
+            border: 3px solid #fff; 
+            box-shadow: 0 0 0 3px #e0e7ff; 
+        }
+        .event-date { font-size: 0.9rem; font-weight: 700; color: var(--primary-color); text-transform: uppercase; letter-spacing: 1px; margin-bottom: 0.5rem; }
+        .event-card { background: #fff; padding: 2rem; border-radius: 1.5rem; box-shadow: 0 4px 15px rgba(0,0,0,0.03); }
+        .event-card h3 { font-size: 1.4rem; margin-bottom: 0.5rem; font-weight: 700; }
+        .event-card p { color: var(--text-gray); font-size: 1rem; line-height: 1.6; }
+        .tag { display: inline-block; background: #f3f4f6; padding: 0.4rem 1rem; border-radius: 20px; font-size: 0.85rem; margin-top: 1rem; color: var(--text-gray); font-weight: 500; }
+        
+        @media (max-width: 768px) { 
+            .header-content { flex-direction: column; gap: 1.5rem; } 
+            nav { flex-wrap: wrap; justify-content: center; } 
+            .page-header h1 { font-size: 2.5rem; } 
+            .timeline { padding-left: 1.5rem; }
+            .event-item::before { left: -1.85rem; }
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <div class="container header-content">
+            <div class="logo">
+                <svg viewBox="0 0 100 100" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M50 20L15 40L50 60L85 40L50 20Z" stroke="#1F2937" stroke-width="5" stroke-linejoin="round"/><path d="M25 50V75C25 75 35 85 50 85C65 85 75 75 75 75V50" stroke="#1F2937" stroke-width="5" stroke-linecap="round" stroke-linejoin="round"/><circle cx="85" cy="65" r="8" fill="#5A5CE6"/><path d="M75 55L85 65" stroke="#5A5CE6" stroke-width="3" stroke-linecap="round"/></svg>
+                <span>Track<span class="highlight-my">My</span>Uni</span>
+            </div>
+            <nav>
+                <a href="index.html" data-key="nav_home">Home</a>
+                <a href="universities.html" data-key="nav_uni">Universities</a>
+                <a href="olympiads.html" data-key="nav_olymp">Olympiads</a>
+                <button id="lang-toggle" title="Switch Language"><i class="fa-solid fa-globe"></i></button>
+            </nav>
+            <div class="auth-buttons">
+                <a href="#" class="btn btn-login" data-key="btn_login">Log In</a>
+                <a href="#" class="btn btn-signup" data-key="btn_signup">Sign Up</a>
+            </div>
+        </div>
+    </header>
+    
+    <main>
+        <section class="page-header">
+            <div class="container">
+                <h1 data-key="cal_page_title">Event Calendar</h1>
+                <p data-key="cal_page_subtitle">Never miss an important deadline, open day, or exam date</p>
+            </div>
+        </section>
+        
+        <section class="container">
+            <div class="timeline">
+                <!-- Event 1 -->
+                <div class="event-item">
+                    <div class="event-date" data-key="cal_date_1">October 30, 2026</div>
+                    <div class="event-card">
+                        <h3 data-key="cal_event_1_title">HSE Open Day</h3>
+                        <p data-key="cal_event_1_desc">Virtual tour of faculties and Q&A session with admissions officers.</p>
+                        <span class="tag" data-key="cal_tag_open_day">Open Day</span>
+                    </div>
+                </div>
+                
+                <!-- Event 2 -->
+                <div class="event-item">
+                    <div class="event-date" data-key="cal_date_2">November 15, 2026</div>
+                    <div class="event-card">
+                        <h3 data-key="cal_event_2_title">Math Olympiad Registration Deadline</h3>
+                        <p data-key="cal_event_2_desc">Last day to submit your application for the International Math Olympiad.</p>
+                        <span class="tag" data-key="cal_tag_deadline">Deadline</span>
+                    </div>
+                </div>
+                
+                <!-- Event 3 -->
+                <div class="event-item">
+                    <div class="event-date" data-key="cal_date_3">December 01, 2026</div>
+                    <div class="event-card">
+                        <h3 data-key="cal_event_3_title">Physics Challenge Starts</h3>
+                        <p data-key="cal_event_3_desc">The first round of the national physics competition begins online.</p>
+                        <span class="tag" data-key="cal_tag_competition">Competition</span>
+                    </div>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <script>
+        const translations = {
+            en: {
+                nav_home: "Home", nav_uni: "Universities", nav_olymp: "Olympiads",
+                btn_login: "Log In", btn_signup: "Sign Up",
+                cal_page_title: "Event Calendar",
+                cal_page_subtitle: "Never miss an important deadline, open day, or exam date",
+                cal_date_1: "October 30, 2026",
+                cal_event_1_title: "HSE Open Day",
+                cal_event_1_desc: "Virtual tour of faculties and Q&A session with admissions officers.",
+                cal_tag_open_day: "Open Day",
+                cal_date_2: "November 15, 2026",
+                cal_event_2_title: "Math Olympiad Registration Deadline",
+                cal_event_2_desc: "Last day to submit your application for the International Math Olympiad.",
+                cal_tag_deadline: "Deadline",
+                cal_date_3: "December 01, 2026",
+                cal_event_3_title: "Physics Challenge Starts",
+                cal_event_3_desc: "The first round of the national physics competition begins online.",
+                cal_tag_competition: "Competition"
+            },
+            ru: {
+                nav_home: "Главная", nav_uni: "Вузы", nav_olymp: "Олимпиады",
+                btn_login: "Войти", btn_signup: "Регистрация",
+                cal_page_title: "Календарь событий",
+                cal_page_subtitle: "Не пропусти важные дедлайны, дни открытых дверей или даты экзаменов",
+                cal_date_1: "30 октября 2026",
+                cal_event_1_title: "День открытых дверей ВШЭ",
+                cal_event_1_desc: "Виртуальный тур по факультетам и сессия вопросов и ответов с представителями приёмной комиссии.",
+                cal_tag_open_day: "День открытых дверей",
+                cal_date_2: "15 ноября 2026",
+                cal_event_2_title: "Дедлайн регистрации на математическую олимпиаду",
+                cal_event_2_desc: "Последний день подачи заявки на участие в Международной математической олимпиаде.",
+                cal_tag_deadline: "Дедлайн",
+                cal_date_3: "1 декабря 2026",
+                cal_event_3_title: "Старт физического челленджа",
+                cal_event_3_desc: "Первый тур национального соревнования по физике начинается в онлайн-формате.",
+                cal_tag_competition: "Соревнование"
+            }
+        };
+
+        const langToggle = document.getElementById('lang-toggle');
+        let currentLang = localStorage.getItem('site_lang') || 'en';
+
+        function applyLanguage(lang) {
+            document.documentElement.lang = lang;
+            document.querySelectorAll('[data-key]').forEach(el => {
+                const key = el.getAttribute('data-key');
+                if (translations[lang][key]) {
+                    el.textContent = translations[lang][key];
+                }
+            });
+            localStorage.setItem('site_lang', lang);
+        }
+
+        langToggle.addEventListener('click', () => {
+            currentLang = currentLang === 'en' ? 'ru' : 'en';
+            applyLanguage(currentLang);
+            langToggle.style.transform = 'rotate(360deg)';
+            setTimeout(() => langToggle.style.transform = 'rotate(0deg)', 300);
+        });
+
+        applyLanguage(currentLang);
+    </script>
+</body>
+</html>
